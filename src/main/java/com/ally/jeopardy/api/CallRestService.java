@@ -6,10 +6,10 @@ import com.ally.jeopardy.models.Question;
 
 public class CallRestService {
 	
-	private void callRestService() {
+	public Question[] callRestService() {
 		RestTemplate restTemplate = new RestTemplate();
-		Question question = restTemplate.getForObject("http://jservice.io/api/random", Question.class);
-		System.out.println(question.getQuestion());
+		Question[] question = restTemplate.getForObject("http://jservice.io/api/random", Question[].class);
+		return question;
 	}
 
 }

@@ -1,14 +1,12 @@
 package com.ally.jeopardy.controllers;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.ally.jeopardy.api.CallRestService;
 import com.ally.jeopardy.models.Question;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -21,18 +19,21 @@ public class QuestionController {
 	
 	@GetMapping("")
 	public ModelAndView jeopardyView() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("index");
-		RestTemplate restTemplate = new RestTemplate();
-		questions = restTemplate.getForObject("http://jservice.io/api/random", Question[].class);
+		CallRestService crs = new CallRestService();
+		questions = crs.callRestService();
 		while(questions[0].getQuestion().compareToIgnoreCase("") == 0)
-			questions = restTemplate.getForObject("http://jservice.io/api/random", Question[].class);
+			questions = crs.callRestService();
 		if(questions[0].getValue() == 0)
 			questions[0].setValue(200);
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("index");
+		
 		mv.addObject("question", questions[0].getQuestion());
 		mv.addObject("answer", questions[0].getAnswer());
 		mv.addObject("points",points);
 		mv.addObject("pointvalue",questions[0].getValue());
+		
 		System.out.println("Answer: "+questions[0].getAnswer());
 		return mv;
 	}
